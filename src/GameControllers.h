@@ -21,13 +21,12 @@
 
 typedef struct {
     gpio_dev* device;
-    volatile uint32_t* port;
     uint32_t mask;
     uint32_t pinNumber;
 } PortData;
 
 typedef struct {
-  uint8_t buttons;
+  uint16_t buttons;
   uint8_t joystickX;
   uint8_t joystickY;
   uint8_t cX;
@@ -38,7 +37,7 @@ typedef struct {
 
 typedef struct {
   uint8_t device;
-  uint8_t buttons;
+  uint16_t buttons;
   uint16_t joystickX; // 10 bit range for analog values
   uint16_t joystickY;
   uint16_t cX;
@@ -51,12 +50,10 @@ class GameController {
     protected:
         void setPortData(PortData *p, unsigned pin) {
             if (pin == INPUT_NOT_IMPLEMENTED) {
-                p->port = NULL;
                 p->device = NULL;
             }
             else {
                 p->device = digitalPinToPort(pin);
-                p->port = portOutputRegister(p->device);
                 p->mask = digitalPinToBitMask(pin);
                 p->pinNumber = PIN_MAP[pin].gpio_bit;
             }
@@ -72,15 +69,18 @@ class GameController {
 
 class NunchuckController : public GameController {
     private:
-#ifdef NUNCHUCK_SOFT_I2C
-        TwoWire* wire;
-#else    
-        HardWire wire;
-#endif
         static uint16_t rescale(uint8_t value); // 8 to 10 bit
         uint8_t sendBytes(uint8_t location, uint8_t value);
         const uint8_t i2cAddress = 0x52;
         uint8_t buffer[6];
+        unsigned scl;
+        unsigned sda;
+#ifdef NUNCHUCK_SOFT_I2C
+        TwoWire* wire;
+#else
+        HardWire* wire;
+#endif    
+        
     
     public:
         bool begin(void);

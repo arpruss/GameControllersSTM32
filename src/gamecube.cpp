@@ -8,7 +8,7 @@ static const uint32_t bitReceiveCycles = cyclesPerUS * 4;
 static const uint32_t halfBitReceiveCycles = cyclesPerUS * 2;
 
 GameCubeController::GameCubeController(unsigned p) {
-    setPortData(&port, p );
+    setPortData(&port, p);
 }
     
 bool GameCubeController::begin() {
@@ -25,13 +25,13 @@ void GameCubeController::sendBits(uint32_t data, uint8_t bits) {
   DWT->CYCCNT = 0;
   uint32_t timerEnd = DWT->CYCCNT;
   do {
-    *port.port &= ~port.mask;
+    gpio_write_bit(port.device, port.pinNumber, 0);
     if (0x80000000ul & data)
       timerEnd += quarterBitSendingCycles;
     else
       timerEnd += 3 * quarterBitSendingCycles;
     while (DWT->CYCCNT < timerEnd) ;
-    *port.port |= port.mask;
+    gpio_write_bit(port.device, port.pinNumber, 1);
     if (0x80000000ul & data)
       timerEnd += 3 * quarterBitSendingCycles;
     else
@@ -52,10 +52,12 @@ bool GameCubeController::receiveBits(void* data0, uint32_t bits) {
 
   *data = 0;
   do {
-    if (!(*port.port & port.mask)) {
+      if (!gpio_read_bit(port.device, port.pinNumber)) {
+
       DWT->CYCCNT = 0;
       while (DWT->CYCCNT < halfBitReceiveCycles - 2) ;
-      if (*port.port & port.mask) {
+        if (gpio_read_bit(port.device, port.pinNumber)) {
+
         *data |= bitmap;
       }
       bitmap >>= 1;
@@ -66,7 +68,7 @@ bool GameCubeController::receiveBits(void* data0, uint32_t bits) {
         if (bits)
           *data = 0;
       }
-      while (0 == (*port.port & port.mask) && --timeout) ;
+      while (!gpio_read_bit(port.device, port.pinNumber) && --timeout) ;
       if (timeout == 0) {
         break;
       }
@@ -88,7 +90,7 @@ bool GameCubeController::readWithRumble(GameControllerData_t* data, bool rumble)
   sendBits(rumble ? 0b0100000000000011000000011l : 0b0100000000000011000000001l, 25);
   bool success = receiveBits(&gcData, 64);
   nvic_globalirq_enable();
-  if (success && 0 == (data->buttons & 0x80) && (data->buttons & 0x8000) ) {
+  if (success && 0 == (gcData.buttons & 0x80) && (gcData.buttons & 0x8000) ) {
     data->device = CONTROLLER_GAMECUBE;
     data->buttons = gcData.buttons;
     data->joystickX = rescale(gcData.joystickX);
