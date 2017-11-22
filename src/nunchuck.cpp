@@ -71,7 +71,7 @@ bool NunchuckController::read(GameControllerData_t* data) {
       return 0;
     memset(data, 0, sizeof(GameControllerData_t));
     data->joystickX = rescale(buffer[0]);
-    data->joystickY = rescale(buffer[1]);
+    data->joystickY = 1023-rescale(buffer[1]);
     data->buttons = 0;
     if (! (buffer[5] & 1) ) // Z
       data->buttons |= 1;
