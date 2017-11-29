@@ -69,6 +69,7 @@ bool GamePortController::read(GameControllerData_t* data) {
         data->joystickX = x >= 0 ? x : 512;
         data->joystickY = y >= 0 ? y : 512;
         data->cX = rz >= 0 ? rz : 512;
+        data->cY = 512;
         data->shoulderRight = s >= 0 ? 1023-s : 0;
     }
     else {
