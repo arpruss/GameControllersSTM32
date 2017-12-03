@@ -5,10 +5,9 @@
 
 //
 // This requires an stm32f1 board compatible with the no-grounding-pin feature of ADCTouchSensor,
-//  this branch of the stm32f1 core: https://github.com/arpruss/Arduino_STM32/tree/addMidiHID
-//  and this library: https://github.com/arpruss/GameControllersSTM32
-//
-// Either gameport or Keyboard+Mouse+gameport mode. 
+//  the libmaple-based stm32f1 core: https://github.com/rogerclarkmelbourne/Arduino_STM32
+//  and these libraries: https://github.com/arpruss/GameControllersSTM32
+//  and these libraries: https://github.com/arpruss/Joystick_stm32f1
 //
 // Pinout for reading gameport analog values:
 // Gameport 3 (X1) A0 --10K-- ground (X)
