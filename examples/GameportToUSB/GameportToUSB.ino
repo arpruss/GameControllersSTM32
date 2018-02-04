@@ -1,5 +1,5 @@
-#include "GameControllers.h"
-#include "Joystick.h"
+#include "GameControllers.h" // https://github.com/arpruss/GameControllersSTM32
+#include "USBHID.h" // https://github.com/arpruss/USBHID_stm32f1
 
 #define LED_BUILTIN PB12 // change to match your board
 
@@ -26,7 +26,8 @@ GamePortController controller(PA0,PA1,PA2,PA3,PA4,PA5,PA6,PA7);
 void setup() 
 {
     pinMode(LED_BUILTIN, OUTPUT);
-    
+
+	USBHID.begin(HID_JOYSTICK);
     digitalWrite(LED_BUILTIN, 1);     
     controller.begin();
     adc_set_sample_rate(ADC1, ADC_SMPR_13_5); // ADC_SMPR_13_5, ADC_SMPR_1_5
