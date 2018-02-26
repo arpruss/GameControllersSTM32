@@ -1,7 +1,6 @@
 // ...header taken from stuff floating around the net...
 
 #ifndef DWT_BASE
-#define DWT_BASE
 
 #define SystemCoreClock F_CPU
 

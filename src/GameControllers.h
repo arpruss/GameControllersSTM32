@@ -76,9 +76,9 @@ class NunchuckController : public GameController {
         unsigned scl;
         unsigned sda;
 #ifdef NUNCHUCK_SOFT_I2C
-        TwoWire* wire;
+        SoftWire* wire;
 #else
-        HardWire* wire;
+        TwoWire* wire;
 #endif    
         
     

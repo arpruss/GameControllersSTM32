@@ -1,9 +1,6 @@
 #include "GameControllers.h"
 #include <string.h>
 
-#define NUNCHUCK_SOFT_I2C // currently, HardWire doesn't work well for hotplugging
-                 // Also, it probably won't well with SPI remap
-
 NunchuckController::NunchuckController(unsigned _scl, unsigned _sda) {
     scl = _scl;
     sda = _sda;
@@ -12,10 +9,10 @@ NunchuckController::NunchuckController(unsigned _scl, unsigned _sda) {
 bool NunchuckController::begin() {
     if (wire == NULL) {
 #ifdef NUNCHUCK_SOFT_I2C
-        wire = new TwoWire(scl, sda, SOFT_STANDARD);
+        wire = new SoftWire(scl, sda, SOFT_STANDARD);
 #else
 #error Hardware I2C has trouble with hotplugging.    
-        wire = new HardWire(1, 0); // I2C_FAST_MODE); 
+        wire = new TwoWire(1, 0); // I2C_FAST_MODE); 
 #endif    
         wire->begin();
     }
