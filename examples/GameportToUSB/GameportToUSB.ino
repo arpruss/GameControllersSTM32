@@ -25,7 +25,7 @@ void setup()
 {
     pinMode(LED_BUILTIN, OUTPUT);
 
-	USBHID.begin(HID_JOYSTICK);
+    USBHID.begin(HID_JOYSTICK);
     digitalWrite(LED_BUILTIN, 1);     
     controller.begin();
     adc_set_sample_rate(ADC1, ADC_SMPR_13_5); // ADC_SMPR_13_5, ADC_SMPR_1_5
