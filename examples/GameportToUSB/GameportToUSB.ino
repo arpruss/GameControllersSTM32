@@ -1,13 +1,11 @@
 #include "GameControllers.h" // https://github.com/arpruss/GameControllersSTM32
 #include "USBHID.h" // https://github.com/arpruss/USBHID_stm32f1
 
-#define LED_BUILTIN PB12 // change to match your board
+#define LED_BUILTIN PB12 // change to match your board ; PB12 for some black pills ; PC13 for blue/red pill
 
-//
-// This requires an stm32f1 board compatible with the no-grounding-pin feature of ADCTouchSensor,
-//  the libmaple-based stm32f1 core: https://github.com/rogerclarkmelbourne/Arduino_STM32
+// This requires the libmaple-based stm32f1 core: https://github.com/rogerclarkmelbourne/Arduino_STM32
 //  and these libraries: https://github.com/arpruss/GameControllersSTM32
-//  and these libraries: https://github.com/arpruss/Joystick_stm32f1
+//  and these libraries: https://github.com/arpruss/USBHID_stm32f1
 //
 // Pinout for reading gameport analog values:
 // Gameport 3 (X1) A0 --10K-- ground (X)
