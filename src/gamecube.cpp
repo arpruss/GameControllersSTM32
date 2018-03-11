@@ -94,9 +94,9 @@ bool GameCubeController::readWithRumble(GameControllerData_t* data, bool rumble)
     data->device = CONTROLLER_GAMECUBE;
     data->buttons = gcData.buttons;
     data->joystickX = rescale(gcData.joystickX);
-    data->joystickY = rescale(gcData.joystickY);
+    data->joystickY = 1023-rescale(gcData.joystickY);
     data->cX = rescale(gcData.cX);
-    data->cY = rescale(gcData.cY);
+    data->cY = 1023-rescale(gcData.cY);
     data->shoulderLeft = rescale(gcData.shoulderLeft);
     data->shoulderRight = rescale(gcData.shoulderRight);
     return true;
