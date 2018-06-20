@@ -98,11 +98,15 @@ class GamePortController : public GameController {
         unsigned sliderPin;
         unsigned rzPin;
         bool haveAxes;
+        unsigned samples=4;
     public:
         bool begin(void);
         bool read(GameControllerData_t* data);
         GamePortController(unsigned axis1, unsigned axis2, unsigned axis3, unsigned axis4,
                 unsigned button1, unsigned button2, unsigned button3, unsigned button4);
+        void setSamples(unsigned n) {
+            samples = n;
+        }
 };
 
 class GameCubeController : public GameController {

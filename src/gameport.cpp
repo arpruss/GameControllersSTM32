@@ -22,7 +22,10 @@ GamePortController::GamePortController(unsigned axis1, unsigned axis2, unsigned 
 int16_t GamePortController::getValue(unsigned pin) {
     if (pin == INPUT_NOT_IMPLEMENTED)
         return -1;
-    uint32_t v = analogRead(pin) & ~3;
+    uint32_t v = 0;
+    for (unsigned i=0;i<samples;i++)
+        v += analogRead(pin);
+    v = (v+samples/2)/samples;
     if (v < minimumAnalogValue/2)
       return -1;
     else { 
