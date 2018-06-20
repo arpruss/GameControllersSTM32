@@ -24,10 +24,11 @@ GamePortController controller(PA0,PA1,PA2,PA3,PA4,PA5,PA6,PA7);
 void setup() 
 {
     pinMode(LED_BUILTIN, OUTPUT);
-    USBComposite.setProductId(0xE004);
+    USBComposite.setProductId(0xE005);
     USBComposite.setProductString("MapleGameportToUSB");
     USBHID.setReportDescriptor(HID_JOYSTICK);
     USBHID.registerComponent();
+    USBComposite.begin(); 
     digitalWrite(LED_BUILTIN, 1);     
     controller.begin();
     adc_set_sample_rate(ADC1, ADC_SMPR_13_5); // ADC_SMPR_13_5, ADC_SMPR_1_5
