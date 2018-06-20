@@ -26,9 +26,7 @@ void setup()
     pinMode(LED_BUILTIN, OUTPUT);
     USBComposite.setProductId(0xE005);
     USBComposite.setProductString("MapleGameportToUSB");
-    USBHID.setReportDescriptor(HID_JOYSTICK);
-    USBHID.registerComponent();
-    USBComposite.begin(); 
+    USBHID.begin(HID_JOYSTICK);
     digitalWrite(LED_BUILTIN, 1);     
     controller.begin();
     adc_set_sample_rate(ADC1, ADC_SMPR_13_5); // ADC_SMPR_13_5, ADC_SMPR_1_5
