@@ -24,11 +24,14 @@ GamePortController controller(PA0,PA1,PA2,PA3,PA4,PA5,PA6,PA7);
 void setup() 
 {
     pinMode(LED_BUILTIN, OUTPUT);
-    USBComposite.setProductId(0xE005);
+    USBComposite.setProductId(0xE004);
     USBComposite.setProductString("MapleGameportToUSB");
     USBHID.begin(HID_JOYSTICK);
+//    USBHID.registerComponent();
+//    USBComposite.begin();
     digitalWrite(LED_BUILTIN, 1);     
     controller.begin();
+    controller.setSamples(4);
     adc_set_sample_rate(ADC1, ADC_SMPR_13_5); // ADC_SMPR_13_5, ADC_SMPR_1_5
     Joystick.setManualReportMode(true);
 } 
@@ -40,7 +43,7 @@ void loop()
       Joystick.X(data.joystickX);
       Joystick.Y(data.joystickY);
       Joystick.Xrotate(data.cX);
-      Joystick.sliderRight(data.shoulderRight);
+      Joystick.sliderRight(1023-data.shoulderRight);
       uint8_t mask = 1;
       for (int i=1; i<=8; i++, mask <<= 1)
         Joystick.button(i, (data.buttons & mask) != 0);
