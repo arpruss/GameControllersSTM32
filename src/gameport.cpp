@@ -1,6 +1,5 @@
 #include "GameControllers.h"
 
-const uint32_t R2 = 10000;
 const uint32_t R1max = 100000;
 const uint32_t maximumAnalogValue = 4095;
 const uint32_t minimumAnalogValue = 4095 * 10 / 110;
@@ -26,10 +25,14 @@ int16_t GamePortController::getValue(unsigned pin) {
     for (unsigned i=0;i<samples;i++)
         v += analogRead(pin);
     v = (v+samples/2)/samples;
+    
+    if (axisResistor == 0)
+        return 1023-v/4;
+    
     if (v < minimumAnalogValue/2)
       return -1;
     else { 
-      uint32_t R = R2*4095/v-R2;
+      uint32_t R = axisResistor*4095/v-axisResistor;
       if (R > R1max)
         return 1023;
       else

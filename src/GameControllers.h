@@ -92,6 +92,7 @@ class GamePortController : public GameController {
     private:
         Debouncer* debouncers[4];
         unsigned buttonPins[4];
+        uint32_t axisResistor = 10000;
         int16_t getValue(unsigned pin);
         unsigned xPin;
         unsigned yPin;
@@ -106,6 +107,9 @@ class GamePortController : public GameController {
                 unsigned button1, unsigned button2, unsigned button3, unsigned button4);
         void setSamples(unsigned n) {
             samples = n;
+        }
+        void setAxisResistors(uint32_t ohms) {
+            axisResistor = ohms;
         }
 };
 
