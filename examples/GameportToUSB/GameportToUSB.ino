@@ -1,5 +1,5 @@
 #include "GameControllers.h" // https://github.com/arpruss/GameControllersSTM32
-#include "USBHID.h" // https://github.com/arpruss/USBHID_stm32f1
+#include "USBComposite.h" // https://github.com/arpruss/USBHID_stm32f1
 
 #define LED_BUILTIN PB12 // change to match your board ; PB12 for some black pills ; PC13 for blue/red pill
 
@@ -20,13 +20,15 @@
 // Gameport 14 (B4) -- A7 (button 4)
 
 GamePortController controller(PA0,PA1,PA2,PA3,PA4,PA5,PA6,PA7);
+USBHID HID;
+HIDJoystick Joystick(HID);
 
 void setup() 
 {
     pinMode(LED_BUILTIN, OUTPUT);
     USBComposite.setProductId(0xE004);
     USBComposite.setProductString("MapleGameportToUSB");
-    USBHID.begin(HID_JOYSTICK);
+    HID.begin(HID_JOYSTICK);
 //    USBHID.registerComponent();
 //    USBComposite.begin();
     digitalWrite(LED_BUILTIN, 1);     
