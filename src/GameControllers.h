@@ -19,11 +19,19 @@
 
 #define INPUT_NOT_IMPLEMENTED ((unsigned)-1)
 
+#define DDR_PAD_EMULATES_STICK
+
 typedef struct {
     gpio_dev* device;
     uint32_t mask;
     uint32_t pinNumber;
 } PortData;
+
+const uint16_t gcmaskDLeft = 0x100;
+const uint16_t gcmaskDRight = 0x200;
+const uint16_t gcmaskDDown = 0x400;
+const uint16_t gcmaskDUp = 0x800;
+const uint16_t gcmaskDPad = 0xF00;
 
 typedef struct {
   uint16_t buttons;
