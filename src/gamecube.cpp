@@ -99,8 +99,7 @@ bool GameCubeController::readWithRumble(GameControllerData_t* data, bool rumble)
     data->cY = 1023-rescale(gcData.cY);
     data->shoulderLeft = rescale(gcData.shoulderLeft);
     data->shoulderRight = rescale(gcData.shoulderRight);
-#ifdef DDR_PAD_EMULATES_STICK
-    if (0 == (gcData.buttons & 0x20) && gcData.joystickX == 1 && gcData.joystickY == 1 && gcData.cX == 1 && gcData.cY == 1 && 
+    if (dpadToJoystick && 0 == (gcData.buttons & 0x20) && gcData.joystickX == 1 && gcData.joystickY == 1 && gcData.cX == 1 && gcData.cY == 1 && 
             gcData.shoulderLeft == 1 && gcData.shoulderRight == 1 && gcData.buttons ) {
         data->joystickX = 512;
         data->joystickY = 512;
@@ -119,7 +118,6 @@ bool GameCubeController::readWithRumble(GameControllerData_t* data, bool rumble)
             data->joystickY = 1023;
         }        
     }
-#endif
     return true;
   }
   else {

@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "debouncer.h"
+#include "SegaController.h"
 #define NUNCHUCK_SOFT_I2C // currently, HardWire doesn't work well for hotplugging
                  // Also, it probably won't well with SPI remap
 
@@ -19,19 +20,25 @@
 
 #define INPUT_NOT_IMPLEMENTED ((unsigned)-1)
 
-#define DDR_PAD_EMULATES_STICK
-
 typedef struct {
     gpio_dev* device;
     uint32_t mask;
     uint32_t pinNumber;
 } PortData;
 
+const uint16_t gcmaskA = 0x01;
+const uint16_t gcmaskB = 0x02;
+const uint16_t gcmaskX = 0x04;
+const uint16_t gcmaskY = 0x08;
 const uint16_t gcmaskDLeft = 0x100;
 const uint16_t gcmaskDRight = 0x200;
 const uint16_t gcmaskDDown = 0x400;
 const uint16_t gcmaskDUp = 0x800;
 const uint16_t gcmaskDPad = 0xF00;
+const uint16_t gcmaskStart = 0x10;
+const uint16_t buttonMaskC = 0x20;
+const uint16_t buttonMaskZ = 0x40;
+const uint16_t buttonMaskMode = 0x80;
 
 typedef struct {
   uint16_t buttons;
@@ -56,6 +63,7 @@ typedef struct {
 
 class GameController {
     protected:
+        bool dpadToJoystick = true;
         void setPortData(PortData *p, unsigned pin) {
             if (pin == INPUT_NOT_IMPLEMENTED) {
                 p->device = NULL;
@@ -72,6 +80,12 @@ class GameController {
         }
         bool begin(void) {
             return true;
+        }
+        void setDPadToJoystick(bool value) {
+            dpadToJoystick = value;
+        }
+        bool getDPadToJoystick() {
+            return dpadToJoystick;
         }
 };
 
@@ -142,6 +156,19 @@ class GameCubeController : public GameController {
         bool read(GameControllerData_t* data);
         bool readWithRumble(GameControllerData_t* data, bool rumble);
         GameCubeController(unsigned pin);
+};
+
+#define NUM_GENESIS_PINS 7
+enum GenesisPins { GENESIS_PIN_1 = 0, GENESIS_PIN_2, GENESIS_PIN_3, GENESIS_PIN_4, GENESIS_PIN_5, GENESIS_PIN_6, GENESIS_PIN_7, GENESIS_PIN_9 };
+#define GENESIS_PIN_SELECT = GENESIS_PIN_7;
+
+class GenesisController : public GameController {
+    private:
+        SegaController* sega;
+    public:
+        bool begin(void);
+        bool read(GameControllerData_t* data);
+        GenesisController(unsigned pin1, unsigned pin2, unsigned pin3, unsigned pin4, unsigned pin6, unsigned pin7, unsigned pin9);
 };
 
 #endif // _NINTENDO_CONTROLLER_H
