@@ -25,14 +25,14 @@ bool GenesisController::read(GameControllerData_t* data) {
     data->cX = 512;
     data->cY = 512;
     if (state & SC_CTL_ON) {
-        data->buttons = ( (state & SC_BTN_A) ? gcmaskA : 0 ) |
-                        ( (state & SC_BTN_B) ? gcmaskB : 0 ) |
-                        ( (state & SC_BTN_C) ? buttonMaskC : 0 ) |
-                        ( (state & SC_BTN_X) ? gcmaskX : 0 ) |
-                        ( (state & SC_BTN_Y) ? gcmaskY : 0 ) |
-                        ( (state & SC_BTN_Z) ? buttonMaskZ : 0 ) |
-                        ( (state & SC_BTN_MODE) ? buttonMaskMode : 0 ) |
-                        ( (state & SC_BTN_START) ? gcmaskStart : 0);
+        data->buttons = ( (state & SC_BTN_A) ? segaMaskA : 0 ) |
+                        ( (state & SC_BTN_B) ? segaMaskB : 0 ) |
+                        ( (state & SC_BTN_C) ? segaMaskC : 0 ) |
+                        ( (state & SC_BTN_X) ? segaMaskX : 0 ) |
+                        ( (state & SC_BTN_Y) ? segaMaskY : 0 ) |
+                        ( (state & SC_BTN_Z) ? segaMaskZ : 0 ) |
+                        ( (state & SC_BTN_MODE) ? segaMaskMode : 0 ) |
+                        ( (state & SC_BTN_START) ? segaMaskStart : 0);
         if (dpadToJoystick) {
             if (state & SC_BTN_LEFT) 
                 data->joystickX = 0;
@@ -45,10 +45,10 @@ bool GenesisController::read(GameControllerData_t* data) {
                 data->joystickY = 1023;
         }
         else {
-            data->buttons |= ( (state & SC_BTN_UP) ? gcmaskDUp : 0 ) |
-                             ( (state & SC_BTN_DOWN) ? gcmaskDUp : 0 ) |
-                             ( (state & SC_BTN_LEFT) ? gcmaskDLeft : 0 ) |
-                             ( (state & SC_BTN_RIGHT) ? gcmaskDRight : 0 );
+            data->buttons |= ( (state & SC_BTN_UP) ? segaMaskUp : 0 ) |
+                             ( (state & SC_BTN_DOWN) ? segaMaskDown : 0 ) |
+                             ( (state & SC_BTN_LEFT) ? segaMaskLeft : 0 ) |
+                             ( (state & SC_BTN_RIGHT) ? segaMaskRight : 0 );
         }
         return true;
     }

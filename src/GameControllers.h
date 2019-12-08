@@ -34,11 +34,25 @@ const uint16_t gcmaskDLeft = 0x100;
 const uint16_t gcmaskDRight = 0x200;
 const uint16_t gcmaskDDown = 0x400;
 const uint16_t gcmaskDUp = 0x800;
+const uint16_t gcmaskZ = 0x1000;
+const uint16_t gcmaskR = 0x2000;
+const uint16_t gcmaskL = 0x4000;
+
 const uint16_t gcmaskDPad = 0xF00;
 const uint16_t gcmaskStart = 0x10;
-const uint16_t buttonMaskC = 0x20;
-const uint16_t buttonMaskZ = 0x40;
-const uint16_t buttonMaskMode = 0x80;
+
+const uint16_t segaMaskA = 1;
+const uint16_t segaMaskB = 2;
+const uint16_t segaMaskC = 4;
+const uint16_t segaMaskX = 8;
+const uint16_t segaMaskY = 16;
+const uint16_t segaMaskZ = 32;
+const uint16_t segaMaskStart = 64;
+const uint16_t segaMaskMode = 128;
+const uint16_t segaMaskLeft = gcmaskDLeft;
+const uint16_t segaMaskRight = gcmaskDRight;
+const uint16_t segaMaskDown = gcmaskDDown;
+const uint16_t segaMaskUp = gcmaskDUp;
 
 typedef struct {
   uint16_t buttons;
