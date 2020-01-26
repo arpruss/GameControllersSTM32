@@ -1,21 +1,8 @@
 #include "GameControllers.h"
 #include <string.h>
 
-NunchuckController::NunchuckController(unsigned _scl, unsigned _sda) {
-    scl = _scl;
-    sda = _sda;
-}
-
 bool NunchuckController::begin() {
-    if (wire == NULL) {
-#ifdef NUNCHUCK_SOFT_I2C
-        wire = new SoftWire(scl, sda, SOFT_STANDARD);
-#else
-#error Hardware I2C has trouble with hotplugging.    
-        wire = new TwoWire(1, 0); // I2C_FAST_MODE); 
-#endif    
-        wire->begin();
-    }
+    wire.begin();
     
 #ifdef MANUAL_DECRYPT
     if (!sendBytes(0x40,0x00)) {
@@ -35,10 +22,10 @@ bool NunchuckController::begin() {
 }
 
 uint8_t NunchuckController::sendBytes(uint8_t location, uint8_t value) {
-    wire->beginTransmission(i2cAddress);
-    wire->write(location);
-    wire->write(value);
-    return 0 == wire->endTransmission();
+    wire.beginTransmission(i2cAddress);
+    wire.write(location);
+    wire.write(value);
+    return 0 == wire.endTransmission();
 }
 
 uint16_t NunchuckController::rescale(uint8_t x) {
@@ -52,9 +39,9 @@ uint16_t NunchuckController::rescale(uint8_t x) {
 }
 
 bool NunchuckController::read(GameControllerData_t* data) {
-    wire->beginTransmission(i2cAddress);
-    wire->write(0x00);
-    if (0!=wire->endTransmission()) 
+    wire.beginTransmission(i2cAddress);
+    wire.write(0x00);
+    if (0!=wire.endTransmission()) 
       return 0;
 
     delayMicroseconds(500);
@@ -62,13 +49,13 @@ bool NunchuckController::read(GameControllerData_t* data) {
 //    Serial.println("Requested");
 #endif
 
-    wire->requestFrom(i2cAddress, 6);
+    wire.requestFrom(i2cAddress, 6);
     int count = 0;
-    while (wire->available() && count<6) {
+    while (wire.available() && count<6) {
 #ifdef MANUAL_DECRYPT
-      buffer[count++] = ((uint8_t)0x17^(uint8_t)wire->read()) + (uint8_t)0x17;
+      buffer[count++] = ((uint8_t)0x17^(uint8_t)wire.read()) + (uint8_t)0x17;
 #else
-      buffer[count++] = wire->read();
+      buffer[count++] = wire.read();
 #endif      
     }
     if (count < 6)
@@ -90,5 +77,3 @@ bool NunchuckController::read(GameControllerData_t* data) {
 
     return true;
 }
-
-

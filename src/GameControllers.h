@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include "debouncer.h"
 #include "SegaController.h"
-#define NUNCHUCK_SOFT_I2C // currently, HardWire doesn't work well for hotplugging
+//  #define NUNCHUCK_SOFT_I2C // currently, HardWire doesn't work well for hotplugging
                  // Also, it probably won't well with SPI remap
 
 #ifdef NUNCHUCK_SOFT_I2C
@@ -109,19 +109,23 @@ class NunchuckController : public GameController {
         uint8_t sendBytes(uint8_t location, uint8_t value);
         const uint8_t i2cAddress = 0x52;
         uint8_t buffer[6];
-        unsigned scl;
-        unsigned sda;
 #ifdef NUNCHUCK_SOFT_I2C
-        SoftWire* wire;
+        SoftWire wire;
 #else
-        TwoWire* wire;
+        TwoWire wire;
 #endif    
         
     
     public:
         bool begin(void);
         bool read(GameControllerData_t* data);
-        NunchuckController(unsigned scl=PB6, unsigned sda=PB7);
+        NunchuckController(unsigned scl=PB6, unsigned sda=PB7) : 
+#ifdef NUNCHUCK_SOFT_I2C
+            wire(scl, sda, SOFT_STANDARD)
+#else
+            wire(1, 0)
+#endif        
+        {};
 };
 
 class GamePortController : public GameController {
