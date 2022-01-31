@@ -78,7 +78,7 @@ bool GameCubeController::receiveBits(void* data0, uint32_t bits) {
   return bits == 0;
 }
 
-bool GameCubeController::readWithRumble(GameControllerData_t* data, bool rumble) {
+bool GameCubeController::readWithRumble(GameCubeData_t* data, bool rumble) {
   if (fails >= maxFails) {
     nvic_globalirq_disable();
     sendBits(0b000000001l, 9);
@@ -90,6 +90,11 @@ bool GameCubeController::readWithRumble(GameControllerData_t* data, bool rumble)
   sendBits(rumble ? 0b0100000000000011000000011l : 0b0100000000000011000000001l, 25);
   bool success = receiveBits(&gcData, 64);
   nvic_globalirq_enable();
+  return success;
+}
+
+bool GameCubeController::readWithRumble(GameControllerData_t* data, bool rumble) {
+  bool success = readWithRumble(&gcData, rumble);
   if (success && 0 == (gcData.buttons & 0x80) && (gcData.buttons & 0x8000) ) {
     data->device = CONTROLLER_GAMECUBE;
     data->buttons = gcData.buttons;

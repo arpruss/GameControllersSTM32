@@ -173,6 +173,7 @@ class GameCubeController : public GameController {
         bool begin(void);
         bool read(GameControllerData_t* data);
         bool readWithRumble(GameControllerData_t* data, bool rumble);
+        bool readWithRumble(GameCubeData_t* data, bool rumble);
         GameCubeController(unsigned pin);
 };
 
