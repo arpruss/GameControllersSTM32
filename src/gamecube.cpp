@@ -88,7 +88,7 @@ bool GameCubeController::readWithRumble(GameCubeData_t* data, bool rumble) {
   }
   nvic_globalirq_disable();
   sendBits(rumble ? 0b0100000000000011000000011l : 0b0100000000000011000000001l, 25);
-  bool success = receiveBits(&gcData, 64);
+  bool success = receiveBits(data, 64);
   nvic_globalirq_enable();
   return success;
 }
@@ -99,9 +99,9 @@ bool GameCubeController::readWithRumble(GameControllerData_t* data, bool rumble)
     data->device = CONTROLLER_GAMECUBE;
     data->buttons = gcData.buttons;
     data->joystickX = rescale(gcData.joystickX);
-    data->joystickY = 1023-rescale(gcData.joystickY);
+    data->joystickY = rescaleReversed(gcData.joystickY);
     data->cX = rescale(gcData.cX);
-    data->cY = 1023-rescale(gcData.cY);
+    data->cY = rescaleReversed(gcData.cY);
     data->shoulderLeft = rescale(gcData.shoulderLeft);
     data->shoulderRight = rescale(gcData.shoulderRight);
     if (dpadToJoystick && 0 == (gcData.buttons & 0x20) && gcData.joystickX == 1 && gcData.joystickY == 1 && gcData.cX == 1 && gcData.cY == 1 && 

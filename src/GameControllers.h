@@ -167,6 +167,15 @@ class GameCubeController : public GameController {
 			else
 				return v;
         }
+        static inline uint16_t rescaleReversed(uint8_t value) {
+			int32_t v = 512-((int32)value-128)*(1023*9)/(8*255);
+			if (v<0)
+				return 0;
+			else if (v>1023)
+				return 1023;
+			else
+				return v;
+        }
         void sendBits(uint32_t data, uint8_t bits);
         bool receiveBits(void* data0, uint32_t bits);
     public:
