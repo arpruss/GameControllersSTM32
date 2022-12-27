@@ -158,6 +158,7 @@ class GameCubeController : public GameController {
         PortData port;
         unsigned fails;
         GameCubeData_t gcData;
+        bool ignoreExtremeJoystick = false;
         static inline uint16_t rescale(uint8_t value) {
 			int32_t v = 512+((int32)value-128)*(1023*9)/(8*255);
 			if (v<0)
@@ -183,6 +184,7 @@ class GameCubeController : public GameController {
         bool read(GameControllerData_t* data);
         bool readWithRumble(GameControllerData_t* data, bool rumble);
         bool readWithRumble(GameCubeData_t* data, bool rumble);
+        void ignoreExtremeJoystickValues(bool v) { ignoreExtremeJoystick = v; }
         GameCubeController(unsigned pin);
 };
 
