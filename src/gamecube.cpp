@@ -1,11 +1,15 @@
 #include "GameControllers.h"
 #include "dwt.h"
 
+#define FLEXIBLE_TIMING // work with controllers that don't have 4us bit timing
+
 static const uint8_t maxFails = 4;
 static const uint32_t cyclesPerUS = (SystemCoreClock / 1000000ul);
 static const uint32_t quarterBitSendingCycles = cyclesPerUS * 5 / 4;
-static const uint32_t bitReceiveCycles = cyclesPerUS * 4;
+#ifndef FLEXIBLE_TIMING
+//static const uint32_t bitReceiveCycles = cyclesPerUS * 4;
 static const uint32_t halfBitReceiveCycles = cyclesPerUS * 2;
+#endif
 static const uint32_t halfBitTimeoutCycles = cyclesPerUS * 6;
 
 // Timeout for controller response:
@@ -49,6 +53,65 @@ void GameCubeController::sendBits(uint32_t data, uint8_t bits) {
   } while (bits);
 }
 
+
+#ifdef FLEXIBLE_TIMING
+// This version should work with controllers whose timing is off, like some Hori pads ( https://www.raphnet.net/electronique/gc_n64_usb/index_en.php )
+
+// bits must be greater than 0
+bool GameCubeController::receiveBits(void* data0, uint32_t bits) {
+  uint8_t* data = (uint8_t*)data0;
+  uint8_t bitmap = 0x80;
+  uint32_t lowTime;
+  uint32_t highTime;
+  
+  // wait for start of transmission (low)
+  DWT->CYCCNT = 0;
+  while (gpio_read_bit(port.device, port.pinNumber)) {
+      if (DWT->CYCCNT >= responseTimeoutCycles)
+          return false;
+  }
+
+  DWT->CYCCNT = 0; // for measuring low time
+
+  *data = 0;
+  do {
+      while (!gpio_read_bit(port.device, port.pinNumber)) {
+        if (DWT->CYCCNT >= halfBitTimeoutCycles)
+            return false;
+      }
+      lowTime = DWT->CYCCNT;
+
+      DWT->CYCCNT = 0;
+      while (gpio_read_bit(port.device, port.pinNumber)) {
+        if (DWT->CYCCNT >= halfBitTimeoutCycles)
+            return false;
+      }
+      highTime = DWT->CYCCNT;      
+      DWT->CYCCNT = 0; // for measuring low time of next bit
+      
+      if (highTime > lowTime) {
+        *data |= bitmap;
+      }
+      
+      bitmap >>= 1;
+      bits--;
+      if (bitmap == 0) {
+        data++;
+        bitmap = 0x80;
+        if (bits)
+          *data = 0;
+      }
+  } while (bits);
+
+  // wait for end of stop bit, just in case
+  while (!gpio_read_bit(port.device, port.pinNumber)) {
+      if (DWT->CYCCNT >= halfBitTimeoutCycles)
+          return false;
+  }
+
+  return true;
+}
+#else
 // bits must be greater than 0
 bool GameCubeController::receiveBits(void* data0, uint32_t bits) {
   uint8_t* data = (uint8_t*)data0;
@@ -102,6 +165,7 @@ bool GameCubeController::receiveBits(void* data0, uint32_t bits) {
 
   return true;
 }
+#endif
 
 bool GameCubeController::readWithRumble(GameCubeData_t* data, bool rumble) {
   if (fails >= maxFails) {
