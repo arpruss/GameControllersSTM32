@@ -6,7 +6,7 @@ static const uint32_t cyclesPerUS = (SystemCoreClock / 1000000ul);
 static const uint32_t quarterBitSendingCycles = cyclesPerUS * 5 / 4;
 static const uint32_t bitReceiveCycles = cyclesPerUS * 4;
 static const uint32_t halfBitReceiveCycles = cyclesPerUS * 2;
-static const uint32_t bitTimeoutCycles = cyclesPerUS * 7;
+static const uint32_t halfBitTimeoutCycles = cyclesPerUS * 6;
 
 // Timeout for controller response:
 //  http://www.int03.co.uk/crema/hardware/gamecube/gc-control.html measured no delay or 15 us
@@ -54,16 +54,15 @@ bool GameCubeController::receiveBits(void* data0, uint32_t bits) {
   uint8_t* data = (uint8_t*)data0;
   uint8_t bitmap = 0x80;
   
-  uint32_t timeOut = responseTimeoutCycles;
+  // wait for start of transmission (low)
+  DWT->CYCCNT = 0;
+  while (gpio_read_bit(port.device, port.pinNumber)) {
+      if (DWT->CYCCNT >= responseTimeoutCycles)
+          return false;
+  }
 
   *data = 0;
   do {
-      // wait for start of bit (low)
-      DWT->CYCCNT = 0;
-      while (gpio_read_bit(port.device, port.pinNumber)) {
-          if (DWT->CYCCNT >= timeOut)
-              return false;
-      }
       
       DWT->CYCCNT = 0;
       while (DWT->CYCCNT < halfBitReceiveCycles - 2) ;
@@ -83,11 +82,23 @@ bool GameCubeController::receiveBits(void* data0, uint32_t bits) {
       // wait for high part of bit if necessary
       DWT->CYCCNT = 0;
       while (!gpio_read_bit(port.device, port.pinNumber)) {
-          if (DWT->CYCCNT >= bitTimeoutCycles)
+          if (DWT->CYCCNT >= halfBitTimeoutCycles)
               return false;
       }
-      timeOut = bitTimeoutCycles; 
+      // wait for start of next bit (or the stop bit at the end)
+      DWT->CYCCNT = 0;
+      while (gpio_read_bit(port.device, port.pinNumber)) {
+          if (DWT->CYCCNT >= halfBitTimeoutCycles)
+              return false;
+      }
   } while (bits);
+
+  // wait for end of stop bit, just in case
+  DWT->CYCCNT = 0;
+  while (!gpio_read_bit(port.device, port.pinNumber)) {
+      if (DWT->CYCCNT >= halfBitTimeoutCycles)
+          return false;
+  }
 
   return true;
 }
