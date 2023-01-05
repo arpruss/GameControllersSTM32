@@ -106,12 +106,11 @@ bool GameCubeController::readWithRumble(GameControllerData_t* data, bool rumble)
     data->shoulderRight = rescale(gcData.shoulderRight);
     /* support Konami pads */
     if (0 == (gcData.buttons & 0x20) && gcData.joystickX == 1 && gcData.joystickY == 1 && gcData.cX == 1 && gcData.cY == 1 && 
-            gcData.shoulderLeft == 1 && gcData.shoulderRight == 1 && gcData.buttons ) {
+            gcData.shoulderLeft == 1 && gcData.shoulderRight == 1 /*&& gcData.buttons*/ ) {
         data->joystickX = 512;
         data->joystickY = 512;
 
-        if (dpadToJoystick) {
-            
+        if (dpadToJoystick) {            
             if (gcData.buttons & gcmaskDLeft) {
                 data->joystickX = 0;
             }
