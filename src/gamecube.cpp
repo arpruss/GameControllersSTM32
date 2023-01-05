@@ -172,7 +172,7 @@ bool GameCubeController::readWithRumble(GameCubeData_t* data, bool rumble) {
     nvic_globalirq_disable();
     sendBits(0b000000001l, 9);
     nvic_globalirq_enable();
-    delayMicroseconds(400);
+    delayMicroseconds(410);
     fails = 0;
   }
   nvic_globalirq_disable();
@@ -184,7 +184,7 @@ bool GameCubeController::readWithRumble(GameCubeData_t* data, bool rumble) {
 
 bool GameCubeController::readWithRumble(GameControllerData_t* data, bool rumble) {
   bool success = readWithRumble(&gcData, rumble);
-  if (success && 0 == (gcData.buttons & 0x80) && (gcData.buttons & 0x8000) ) {
+  if (success && 0 == (gcData.buttons & 0x80) /*&& (gcData.buttons & 0x8000)*/ ) {
     data->device = CONTROLLER_GAMECUBE;
     data->buttons = gcData.buttons;
     data->joystickX = rescale(gcData.joystickX);

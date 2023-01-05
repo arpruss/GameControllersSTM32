@@ -176,9 +176,9 @@ class GameCubeController : public GameController {
 			else
 				return v;
         }
+    public:
         void sendBits(uint32_t data, uint8_t bits);
         bool receiveBits(void* data0, uint32_t bits);
-    public:
         bool begin(void);
         bool read(GameControllerData_t* data);
         bool readWithRumble(GameControllerData_t* data, bool rumble);
