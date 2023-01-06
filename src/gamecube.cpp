@@ -51,6 +51,12 @@ void GameCubeController::sendBits(uint32_t data, uint8_t bits) {
     bits--;
     while (DWT->CYCCNT < timerEnd) ;
   } while (bits);
+  DWT->CYCCNT = 0;
+  gpio_write_bit(port.device, port.pinNumber, 0);
+  while (DWT->CYCCNT < quarterBitSendingCycles) ;
+  DWT->CYCCNT = 0;
+  gpio_write_bit(port.device, port.pinNumber, 1);
+  while (DWT->CYCCNT < 2*quarterBitSendingCycles) ;
 }
 
 
@@ -170,13 +176,13 @@ bool GameCubeController::receiveBits(void* data0, uint32_t bits) {
 bool GameCubeController::readWithRumble(GameCubeData_t* data, bool rumble) {
   if (fails >= maxFails) {
     nvic_globalirq_disable();
-    sendBits(0b000000001l, 9);
+    sendBits(0b00000000l, 8);
     nvic_globalirq_enable();
     delayMicroseconds(410);
     fails = 0;
   }
   nvic_globalirq_disable();
-  sendBits(rumble ? 0b0100000000000011000000011l : 0b0100000000000011000000001l, 25);
+  sendBits(rumble ? 0b010000000000001100000001l : 0b010000000000001100000000l, 24);
   bool success = receiveBits(data, 64);
   nvic_globalirq_enable();
   return success;
