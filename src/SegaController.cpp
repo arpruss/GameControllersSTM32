@@ -56,7 +56,7 @@ SegaController::SegaController(unsigned db9_pin_7, unsigned db9_pin_1, unsigned 
 
 word SegaController::getState()
 {
-    if (max(millis() - _lastReadTime, 0) < SC_READ_DELAY_MS)
+    if (millis()-_lastReadTime < SC_READ_DELAY_MS)
     {
         // Not enough time has elapsed, return previously read state
         return _currentState;
