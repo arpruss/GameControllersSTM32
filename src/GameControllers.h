@@ -99,6 +99,7 @@ class GameController {
 
 class NunchuckControllerBase : public GameController {
     private:
+        void (*usDelay)(uint32_t us);
         static uint16_t rescale(uint8_t value); // 8 to 10 bit
         uint8_t sendBytes(uint8_t location, uint8_t value);
         const uint8_t i2cAddress = 0x52;

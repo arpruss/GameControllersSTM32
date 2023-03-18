@@ -1,26 +1,38 @@
 #include "GameControllers.h"
 #include <string.h>
-#define MULT 2
 
 //#define MANUAL_DECRYPT
 
+static void delayMicrosecondsDouble(uint32_t us) {
+    // some stm32f103c8t6 clones need doubling the delay!
+    delayMicroseconds(2*us);
+}
+
 bool NunchuckControllerBase::initNunchuck() {
-    delayMicroseconds(MULT*250);
+    uint32_t us = micros();
+    delayMicroseconds(10000);
+    if (micros()-us < 7500) {
+        usDelay = delayMicrosecondsDouble;
+    }
+    else {
+        usDelay = delayMicroseconds;
+    }
+    usDelay(250);
     
 #ifdef MANUAL_DECRYPT
     if (!sendBytes(0x40,0x00)) {
         return false; 
     }
-    delayMicroseconds(MULT*250);
+    usDelay(250);
 #else
     if (! sendBytes(0xF0, 0x55)) {
         return false;
     }
-    delayMicroseconds(MULT*250);
+    usDelay(250);
     if (! sendBytes(0xFB, 0x00)) 
         return false;
 #endif
-    delayMicroseconds(MULT*250);
+    usDelay(250);
     return true; 
 }
 
@@ -51,10 +63,10 @@ bool NunchuckControllerBase::read(GameControllerData_t* data) {
         retries--;
         if (!retries)
             return false;
-        delayMicroseconds(MULT*500);
+        usDelay(500);
     }
 
-    delayMicroseconds(MULT*500);
+    usDelay(500);
 #ifdef SERIAL_DEBUG
 //    Serial.println("Requested");
 #endif
