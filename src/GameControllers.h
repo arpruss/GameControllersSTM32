@@ -4,14 +4,8 @@
 #include <Arduino.h>
 #include "debouncer.h"
 #include "SegaController.h"
-//  #define NUNCHUCK_SOFT_I2C // currently, HardWire doesn't work well for hotplugging
-                 // Also, it probably won't well with SPI remap
-
-#ifdef NUNCHUCK_SOFT_I2C
 #include <SoftWire.h>
-#else
 #include <Wire.h>
-#endif                 
                  
 #define CONTROLLER_NONE     0
 #define CONTROLLER_GAMECUBE 1
@@ -103,29 +97,48 @@ class GameController {
         }
 };
 
-class NunchuckController : public GameController {
+class NunchuckControllerBase : public GameController {
     private:
         static uint16_t rescale(uint8_t value); // 8 to 10 bit
         uint8_t sendBytes(uint8_t location, uint8_t value);
         const uint8_t i2cAddress = 0x52;
         uint8_t buffer[6];
-#ifdef NUNCHUCK_SOFT_I2C
-        SoftWire wire;
-#else
+        WireBase* wirebase;
+            
+    public:
+        bool initNunchuck(void); // wire must be initialized first
+        bool read(GameControllerData_t* data);
+        NunchuckControllerBase(WireBase* _wirebase) {
+            wirebase = _wirebase;
+        }
+};
+
+class NunchuckController : public NunchuckControllerBase {
+    private:
         TwoWire wire;
-#endif    
-        
     
     public:
-        bool begin(void);
-        bool read(GameControllerData_t* data);
-        NunchuckController(unsigned scl=PB6, unsigned sda=PB7) : 
-#ifdef NUNCHUCK_SOFT_I2C
-            wire(scl, sda, SOFT_STANDARD)
-#else
-            wire(1, 0)
-#endif        
-        {};
+        bool begin(void) {
+            wire.begin();
+            return initNunchuck();
+        }
+
+        NunchuckController(unsigned port=1, unsigned mode=0) : 
+            wire(port, mode), NunchuckControllerBase(&wire) {};
+};
+
+class NunchuckController_SoftWire : public NunchuckControllerBase {
+    private:
+        SoftWire wire;
+    
+    public:
+        bool begin(void) {
+            wire.begin();
+            return initNunchuck();
+        }
+
+        NunchuckController_SoftWire(unsigned scl=PB6, unsigned sda=PB7, unsigned speed=SOFT_STANDARD) : 
+            wire(scl, sda, speed), NunchuckControllerBase(&wire) {};
 };
 
 class GamePortController : public GameController {
